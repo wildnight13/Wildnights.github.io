@@ -12,7 +12,7 @@
     <canvas id="pongCanvas" width="640" height="480"></canvas>
 
     <script>
-        // Paddle sınıfı
+ 
         class Paddle {
             constructor(x, y) {
                 this.width = 10;
@@ -37,7 +37,7 @@
             }
         }
 
-        // Top sınıfı
+    
         class Ball {
             constructor(x, y) {
                 this.radius = 5;
@@ -63,7 +63,6 @@
                     this.dy = -this.dy;
                 }
 
-                // Paddle ile temas kontrolü
                 if (this.x - this.radius < player1.x + player1.width && this.y > player1.y && this.y < player1.y + player1.height ||
                     this.x + this.radius > player2.x && this.y > player2.y && this.y < player2.y + player2.height) {
                     this.dx = -this.dx;
@@ -71,18 +70,17 @@
             }
         }
 
-        // Canvas ve context
+      
         const canvas = document.getElementById("pongCanvas");
         const context = canvas.getContext("2d");
 
-        // Oyuncuları oluştur
         const player1 = new Paddle(20, canvas.height / 2 - 25);
         const player2 = new Paddle(canvas.width - 30, canvas.height / 2 - 25);
 
-        // Topu oluştur
+
         const ball = new Ball(canvas.width / 2, canvas.height / 2);
 
-        // Yapay zeka hareketini güncelle
+  
         function updateAI() {
             const paddleCenter = player2.y + player2.height / 2;
             if (paddleCenter < ball.y - 10) {
@@ -94,39 +92,38 @@
             }
         }
 
-        // Oyuncuları hareket ettir
+  
         function movePaddle(event) {
             const rect = canvas.getBoundingClientRect();
             const mouseY = event.clientY - rect.top - player1.height / 2;
             player1.y = mouseY;
         }
 
-        // Oyun döngüsü
+   
         function gameLoop() {
             // Ekranı temizle
             context.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Oyuncuları güncelle ve çiz
             player1.update();
             player1.draw(context);
             player2.update();
             player2.draw(context);
 
-            // Topu güncelle ve çiz
+      
             ball.update();
             ball.draw(context);
 
-            // Yapay zekayı güncelle
+         
             updateAI();
 
-            // Oyun döngüsünü tekrar çağır
+  
             requestAnimationFrame(gameLoop);
         }
 
-        // Fare hareketi algılandığında oyuncu hareketini güncelle
+
         canvas.addEventListener("mousemove", movePaddle);
 
-        // Oyun döngüsünü başlat
+ 
         gameLoop();
     </script>
 </body>
