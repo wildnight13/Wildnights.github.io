@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pong</title>
+    <style>
+        canvas {
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="pongCanvas" width="640" height="480"></canvas>
+
+    <script>
+        // Paddle sınıfı
+        class Paddle {
+            constructor(x, y) {
+                this.width = 10;
+                this.height = 50;
+                this.x = x;
+                this.y = y;
+                this.dy = 0;
+            }
+
+            draw(context) {
+                context.fillStyle = "#fff";
+                context.fillRect(this.x, this.y, this.width, this.height);
+            }
+
+            update() {
+                this.y += this.dy;
+                if (this.y < 0) {
+                    this.y = 0;
+                } else if (this.y + this.height > canvas.height) {
+                    this.y = canvas.height - this.height;
+                }
+            }
+        }
+
+        // Top sınıfı
+        class Ball {
+            constructor(x, y) {
+                this.radius = 5;
+                this.x = x;
+                this.y = y;
+                this.dx = 3;
+                this.dy = 3;
+            }
+
+            draw(context) {
+                context.beginPath();
+                context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                context.fillStyle = "#fff";
+                context.fill();
+                context.closePath();
+            }
+
+            update() {
+                this.x += this.dx;
+                this.y += this.dy;
+
+                if (this.y + this.radius > canvas.height || this.y - this.radius < 0) {
+                    this.dy = -this.dy;
+                }
+
+                // Paddle ile temas kontrolü
+                if (this.x - this.radius < player1.x + player1.width && this.y > player1.y && this.y < player1.y + player1.height ||
+                    this.x + this.radius > player2.x && this.y > player2.y && this.y < player2.y + player2.height) {
+                    this.dx = -this.dx;
+                }
+            }
+        }
+
+        // Canvas ve context
+        const canvas = document.getElementById("pongCanvas");
+        const context = canvas.getContext("2d");
+
+        // Oyuncuları oluştur
+        const player1 = new Paddle(20, canvas.height / 2 - 25);
+        const player2 = new Paddle(canvas.width - 30, canvas.height / 2 - 25);
+
+        // Topu oluştur
+        const ball = new Ball(canvas.width / 2, canvas.height / 2);
+
+        // Yapay zeka hareketini güncelle
+        function updateAI() {
+            const paddleCenter = player2.y + player2.height / 2;
+            if (paddleCenter < ball.y - 10) {
+                player2.dy = 3;
+            } else if (paddleCenter > ball.y + 10) {
+                player2.dy = -3;
+            } else {
+                player2.dy = 0;
+            }
+        }
+
+        // Oyuncuları hareket ettir
+        function movePaddle(event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseY = event.clientY - rect.top - player1.height / 2;
+            player1.y = mouseY;
+        }
+
+        // Oyun döngüsü
+        function gameLoop() {
+            // Ekranı temizle
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Oyuncuları güncelle ve çiz
+            player1.update();
+            player1.draw(context);
+            player2.update();
+            player2.draw(context);
+
+            // Topu güncelle ve çiz
+            ball.update();
+            ball.draw(context);
+
+            // Yapay zekayı güncelle
+            updateAI();
+
+            // Oyun döngüsünü tekrar çağır
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Fare hareketi algılandığında oyuncu hareketini güncelle
+        canvas.addEventListener("mousemove", movePaddle);
+
+        // Oyun döngüsünü başlat
+        gameLoop();
+    </script>
+</body>
+</html>
